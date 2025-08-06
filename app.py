@@ -2,8 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 car_data = pd.read_csv(
-    r'C:\Users\Alfredo Díaz J\Desktop\proyecto_final_sprin_7\proyecto_sprint_7\vehicles_us.csv')
-
+    r'vehicles_us.csv')  # leer el archivo CSV
 # eliminar filas con valores NaN en 'model_year'
 car_data.dropna(subset=['model_year'], inplace=True)
 car_data['model_year'] = car_data['model_year'].astype(
