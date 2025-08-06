@@ -66,3 +66,46 @@ st.header('Histograma de las condiciones de los vehículos vs modelo')
 fig2 = px.histogram(car_data, x="model_year", color="condition",
                     title='Histograma de condiciones vs modelo')
 st.plotly_chart(fig2, use_container_width=True)
+
+st.title('Comparación de Distribución de Precios')
+st.write('Selecciona dos fabricantes para comparar la distribución de precios de sus vehículos.')
+todos_fabricantes = sorted(car_data['fabricante'].unique())
+# Seleccionar el primer fabricante con un valor predeterminado
+fabricante_1 = st.selectbox(
+    'Selecciona fabricante 1',
+    options=todos_fabricantes,
+    index=todos_fabricantes.index('chevrolet') if 'chevrolet' in todos_fabricantes else 0)
+# Seleccionar el segundo fabricante con un valor predeterminado
+fabricante_2 = st.selectbox(
+    'Selecciona fabricante 2',
+    options=todos_fabricantes,
+    index=todos_fabricantes.index('ford') if 'ford' in todos_fabricantes else 0)
+# checkbox para normalizar el histograma
+normalizar_hist = st.checkbox('Normalizar el histograma', value=True)
+# Filtrar los datos para los fabricantes seleccionados
+fabricantes_filtrados = car_data[car_data['fabricante'].isin(
+    [fabricante_1, fabricante_2])]
+# Crear el histograma
+if not fabricantes_filtrados.empty:
+    histnorm_value = 'percent' if normalizar_hist else None
+    fig_4 = px.histogram(
+        fabricantes_filtrados,
+        x='price',
+        color='fabricante',
+        barmode='overlay',
+        nbins=25,  # Puedes ajustar el número de barras (bins)
+        title=f'Distribución de precios entre {fabricante_1} y {fabricante_2}',
+        histnorm=histnorm_value,
+        opacity=0.7  # Añadimos opacidad para ver ambas distribuciones
+    )
+    if normalizar_hist:
+        fig_4.update_yaxes(title_text='Porcentaje')
+    else:
+        fig_4.update_yaxes(title_text='Conteo')
+
+    fig_4.update_layout(xaxis_title='Precio')
+
+    # Mostramos el gráfico en Streamlit
+    st.plotly_chart(fig_4, use_container_width=True)
+else:
+    st.warning('No hay datos suficientes para los fabricantes seleccionados.')
